@@ -156,7 +156,7 @@ class TreeWidget(QTreeWidget):
 
                 with open(self.parent.img_dir + '/-save-.txt', 'w') as f:
                     f.write(json.dumps(self.parent.act))
-                self.parent.lb_saved.setText('Auto-saved to ' + self.parent.img_dir + '-save-.txt')
+                self.parent.lb_saved.setText('Auto-saved to ' + self.parent.img_dir + '/-save-.txt')
                 break
 
 class PerformThread(QThread):
@@ -414,7 +414,7 @@ class StartWindow(QMainWindow):
 
                 with open(self.img_dir + '/-save-.txt', 'w') as f:
                     f.write(json.dumps(self.act))
-                self.lb_saved.setText('Auto-saved to ' + self.img_dir + '-save-.txt')
+                self.lb_saved.setText('Auto-saved to ' + self.img_dir + '/-save-.txt')
                 break
 
     def on_con_ac_clicked(self):
