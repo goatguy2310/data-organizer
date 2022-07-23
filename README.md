@@ -8,7 +8,9 @@ By moving around with arrow keys and setting up your own custom hotkeys to do yo
 
 Select an image directory. Accepted file types are .png, .jpg and .jpeg
 
-Create a list of actions with their hotkeys. When pressing a hotkey while selecting an image, the action corresponding to the key will be auto-saved with that image. To move around the images, use the arrow keys. Finally, to perform all the actions, press on the "Confirm Action" button.
+![image](https://user-images.githubusercontent.com/52200386/180602621-e32cb75c-b76e-4525-b052-74f37a8fb5ba.png)
+
+Create a list of actions with their hotkeys. When pressing a hotkey while selecting an image, the action corresponding to the key will be auto-saved with that image. The action will be shown at the bottom of the image. To move around the images, use the arrow keys. Finally, to perform all the actions, press on the "Confirm Action" button.
 
 To make an action, first click "Listen" and press the hotkey. Then select the action you want (currently three actions: Copy, Move and Delete) and the directory if needed. Finally, click "Ok".
 
