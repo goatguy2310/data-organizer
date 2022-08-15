@@ -156,6 +156,7 @@ class TreeWidget(QTreeWidget):
 
                 with open(self.parent.img_dir + '/-save-.txt', 'w') as f:
                     f.write(json.dumps(self.parent.act))
+                self.parent.lb_processed.setText(f'Processed images: {len(self.parent.act)}/{len(os.listdir(self.parent.img_dir))}')
                 self.parent.lb_saved.setText('Auto-saved to ' + self.parent.img_dir + '/-save-.txt')
                 break
 
@@ -256,6 +257,9 @@ class StartWindow(QMainWindow):
             self.lb_file = QLabel('No image found')
             self.img_layout.addWidget(self.lb_file)
 
+            self.lb_processed = QLabel('')
+            self.img_layout.addWidget(self.lb_processed)
+
             self.lb_saved = QLabel('')
             self.img_layout.addWidget(self.lb_saved)
 
@@ -297,7 +301,9 @@ class StartWindow(QMainWindow):
         if self.loading or not item.text(0).endswith(('.png', '.jpg', '.jpeg')):
             return
         self.lb_file.setText(item.text(0))
-        self.lb_im.setPixmap(QPixmap(self.img_dir + '\\' + item.text(0)))
+        self.lb_processed.setText(f'Processed images: {len(self.act)}/{len(os.listdir(self.img_dir))}')
+        self.pix = QPixmap(self.img_dir + '\\' + item.text(0))
+        self.lb_im.setPixmap(self.pix.scaled(self.lb_im.width(), self.lb_im.height(), Qt.KeepAspectRatio))
         self.lb_im.setScaledContents(True)
         self.lb_im.setFixedWidth(self.lb_im.pixmap().width())
         self.lb_im.setFixedHeight(self.lb_im.pixmap().height())
@@ -414,6 +420,7 @@ class StartWindow(QMainWindow):
 
                 with open(self.img_dir + '/-save-.txt', 'w') as f:
                     f.write(json.dumps(self.act))
+                self.lb_processed.setText(f'Processed images: {len(self.act)}/{len(os.listdir(self.img_dir))}')
                 self.lb_saved.setText('Auto-saved to ' + self.img_dir + '/-save-.txt')
                 break
 
