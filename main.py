@@ -10,6 +10,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QDialogButtonBox
 from PyQt5.QtGui import QIcon, QPixmap, QKeySequence
 from PyQt5.QtCore import Qt, QThread
 
+from natsort import natsorted
+
 class EditDialog(QDialog):
     def __init__(self, title, item, parent):
         super(EditDialog, self).__init__(parent)
@@ -156,7 +158,7 @@ class TreeWidget(QTreeWidget):
 
                 with open(self.parent.img_dir + '/-save-.txt', 'w') as f:
                     f.write(json.dumps(self.parent.act))
-                self.parent.lb_processed.setText(f'Processed images: {len(self.parent.act)}/{len(os.listdir(self.parent.img_dir))}')
+                self.parent.lb_processed.setText(f'Processed files: {len(self.parent.act)}/{len(os.listdir(self.parent.img_dir))}')
                 self.parent.lb_saved.setText('Auto-saved to ' + self.parent.img_dir + '/-save-.txt')
                 break
 
@@ -232,11 +234,11 @@ class StartWindow(QMainWindow):
         self.img_layout = QBoxLayout(QBoxLayout.TopToBottom)
         self.layout.addLayout(self.img_layout)
 
-        self.lb_ins = QLabel('WELCOME TO DATA ORGANIZER!!!!!!!!\nTo get started, please select the image directory. Accepted file types are png, jpg, and jpeg.')
+        self.lb_ins = QLabel('WELCOME TO DATA ORGANIZER!!!!!!!!\nTo get started, please select the data directory. Accepted file types are png, jpg, jpeg and text files.')
         self.lb_ins.setAlignment(Qt.AlignCenter)
         self.img_layout.addWidget(self.lb_ins)
 
-        self.btn_dir = QPushButton('Select Image Directory')
+        self.btn_dir = QPushButton('Select Data Directory')
         self.btn_dir.clicked.connect(self.on_select_dir_clicked)
         self.img_layout.addWidget(self.btn_dir)
 
@@ -246,15 +248,15 @@ class StartWindow(QMainWindow):
     
     def on_select_dir_clicked(self):
         self.old_dir = self.img_dir
-        self.img_dir = str(QFileDialog.getExistingDirectory(self, 'Select Image Directory'))
+        self.img_dir = str(QFileDialog.getExistingDirectory(self, 'Select Data Directory'))
         if self.img_dir == '': return
-        self.btn_dir.setText('Change Image Directory')
+        self.btn_dir.setText('Change Data Directory')
 
         if self.fi:
             self.fi = False
             self.lb_ins.setVisible(False)
 
-            self.lb_file = QLabel('No image found')
+            self.lb_file = QLabel('No file found')
             self.img_layout.addWidget(self.lb_file)
 
             self.lb_processed = QLabel('')
@@ -263,7 +265,7 @@ class StartWindow(QMainWindow):
             self.lb_saved = QLabel('')
             self.img_layout.addWidget(self.lb_saved)
 
-            self.lb_im = QLabel()
+            self.lb_im = QLabel(wordWrap=True)
             self.img_layout.addWidget(self.lb_im)
 
             self.btn_ac = QPushButton('None')
@@ -298,17 +300,24 @@ class StartWindow(QMainWindow):
             self.on_item_changed(self.tree.topLevelItem(0))
 
     def on_item_changed(self, item):
-        if self.loading or not item.text(0).endswith(('.png', '.jpg', '.jpeg')):
+        if self.loading:
             return
+        self.lb_im.clear()
         self.lb_file.setText(item.text(0))
-        self.lb_processed.setText(f'Processed images: {len(self.act)}/{len(os.listdir(self.img_dir))}')
-        self.pix = QPixmap(self.img_dir + '\\' + item.text(0))
-        self.lb_im.setPixmap(self.pix.scaled(self.lb_im.width(), self.lb_im.height(), Qt.KeepAspectRatio))
-        self.lb_im.setScaledContents(True)
-        self.lb_im.setFixedWidth(self.lb_im.pixmap().width())
-        self.lb_im.setFixedHeight(self.lb_im.pixmap().height())
-        self.lb_im.setAlignment(Qt.AlignCenter)
+        self.lb_processed.setText(f'Processed files: {len(self.act)}/{len(os.listdir(self.img_dir))}')
         self.btn_ac.setText('None' if item.text(0) not in self.act else self.act[item.text(0)])
+        if item.text(0).endswith(('.png', '.jpg', '.jpeg')):
+            self.pix = QPixmap(self.img_dir + '\\' + item.text(0))
+            self.lb_im.setPixmap(self.pix.scaled(self.lb_im.width(), self.lb_im.height(), Qt.KeepAspectRatio))
+            self.lb_im.setScaledContents(True)
+            self.lb_im.setFixedWidth(self.lb_im.pixmap().width())
+            self.lb_im.setFixedHeight(self.lb_im.pixmap().height())
+            self.lb_im.setAlignment(Qt.AlignCenter)
+        else:
+            # set lb_im to the content of the text file
+            with open(self.img_dir + '\\' + item.text(0), 'r', encoding='utf-8') as f:
+                self.lb_im.setText(f.read())
+
 
     def load_folder(self, path):
         self.loading = True
@@ -316,7 +325,7 @@ class StartWindow(QMainWindow):
         self.tree.clear()
         self.tree.setHeaderLabels([path])
         fs = os.listdir(path)
-        fs.sort()
+        fs = sorted(fs)
         for f in fs:
             if not f.endswith(('.png', '.jpg', '.jpeg')):
                 continue
@@ -420,7 +429,7 @@ class StartWindow(QMainWindow):
 
                 with open(self.img_dir + '/-save-.txt', 'w') as f:
                     f.write(json.dumps(self.act))
-                self.lb_processed.setText(f'Processed images: {len(self.act)}/{len(os.listdir(self.img_dir))}')
+                self.lb_processed.setText(f'Processed files: {len(self.act)}/{len(os.listdir(self.img_dir))}')
                 self.lb_saved.setText('Auto-saved to ' + self.img_dir + '/-save-.txt')
                 break
 
